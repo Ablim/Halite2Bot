@@ -2,3 +2,5 @@
 .vs
 Halite2/bin
 Halite2/obj
+*.log
+*.hlt

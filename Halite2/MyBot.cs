@@ -5,51 +5,106 @@ namespace Halite2
 {
     public class MyBot
     {
-
-        public static void Main(string[] args)
+        public MyBot()
         {
-            string name = args.Length > 0 ? args[0] : "Sharpie";
+
+        }
+
+        public void Run()
+        {
+            string name = "AblimBot";
 
             Networking networking = new Networking();
             GameMap gameMap = networking.Initialize(name);
-
             List<Move> moveList = new List<Move>();
-            for (; ; )
+
+            while (true)
             {
                 moveList.Clear();
                 gameMap.UpdateMap(Networking.ReadLineIntoMetadata());
+                var takenPlanets = new Dictionary<int, int>();
 
-                foreach (Ship ship in gameMap.GetMyPlayer().GetShips().Values)
+                foreach (var ship in gameMap.GetMyPlayer().GetShips().Values)
                 {
-                    if (ship.GetDockingStatus() != Ship.DockingStatus.Undocked)
-                    {
-                        continue;
-                    }
+                    /**
+                     * Fly ships. Conquer planets to get more ships. Fight other ships. Repeat.
+                     * Ultimate question: what should each ship do?
+                     **/
 
-                    foreach (Planet planet in gameMap.GetAllPlanets().Values)
+                    //Greedy, take the best planet first
+
+                    Planet bestPlanet = null;
+                    double bestPlanetScore = 0;
+
+                    foreach (var planet in gameMap.GetAllPlanets().Values)
                     {
-                        if (planet.IsOwned())
+                        if (planet.GetOwner() == gameMap.GetMyPlayerId())
+                        {
+                            continue;
+                        }
+                        else if (planet.GetDockedShips().Count == planet.GetDockingSpots())
+                        {
+                            continue;
+                        }
+                        else if (takenPlanets.ContainsKey(planet.GetId()))
                         {
                             continue;
                         }
 
-                        if (ship.CanDock(planet))
-                        {
-                            moveList.Add(new DockMove(ship, planet));
-                            break;
-                        }
+                        var distance = planet.GetDistanceTo(ship);
+                        var production = planet.GetCurrentProduction();
+                        var currentPlanetScore = production + (1 / distance);
 
-                        ThrustMove newThrustMove = Navigation.NavigateShipToDock(gameMap, ship, planet, Constants.MAX_SPEED / 2);
-                        if (newThrustMove != null)
+                        if (currentPlanetScore > bestPlanetScore)
                         {
-                            moveList.Add(newThrustMove);
+                            bestPlanetScore = currentPlanetScore;
+                            bestPlanet = planet;
                         }
+                    }
 
-                        break;
+                    if (bestPlanet != null)
+                    {
+                        takenPlanets.Add(bestPlanet.GetId(), ship.GetId());
+
+                        if (ship.CanDock(bestPlanet))
+                        {
+                            var move = new DockMove(ship, bestPlanet);
+
+                            if (move != null)
+                            {
+                                moveList.Add(move);
+                            }
+
+                            continue;
+
+                        }
+                        else
+                        {
+                            var move = Navigation.NavigateShipToDock(gameMap, ship, bestPlanet, Constants.MAX_SPEED);
+
+                            if (move != null)
+                            {
+                                moveList.Add(move);
+                            }
+
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        //Fight!
+
                     }
                 }
+
                 Networking.SendMoves(moveList);
             }
+        }
+
+        public static void Main(string[] args)
+        {
+            var bot = new MyBot();
+            bot.Run();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Halite2.hlt;
+using System;
 using System.Collections.Generic;
 
 namespace Halite2
@@ -17,12 +18,12 @@ namespace Halite2
             Networking networking = new Networking();
             GameMap gameMap = networking.Initialize(name);
             List<Move> moveList = new List<Move>();
+            var random = new Random();
 
             while (true)
             {
                 moveList.Clear();
                 gameMap.UpdateMap(Networking.ReadLineIntoMetadata());
-                var takenPlanets = new Dictionary<int, int>();
 
                 foreach (var ship in gameMap.GetMyPlayer().GetShips().Values)
                 {
@@ -30,75 +31,78 @@ namespace Halite2
                      * Fly ships. Conquer planets to get more ships. Fight other ships. Repeat.
                      * Ultimate question: what should each ship do?
                      **/
-
-                    //Greedy, take the best planet first
+                    if (ship.GetDockingStatus() != Ship.DockingStatus.Undocked)
+                    {
+                        continue;
+                    }
 
                     Planet bestPlanet = null;
                     double bestPlanetScore = 0;
+                    Planet closestEnemyPlanet = null;
 
                     foreach (var planet in gameMap.GetAllPlanets().Values)
                     {
-                        if (planet.GetOwner() == gameMap.GetMyPlayerId())
+                        if (planet.GetOwner() == gameMap.GetMyPlayerId() || !planet.IsOwned())
                         {
-                            continue;
-                        }
-                        else if (planet.GetDockedShips().Count == planet.GetDockingSpots())
-                        {
-                            continue;
-                        }
-                        else if (takenPlanets.ContainsKey(planet.GetId()))
-                        {
-                            continue;
-                        }
-
-                        var distance = planet.GetDistanceTo(ship);
-                        var production = planet.GetCurrentProduction();
-                        var currentPlanetScore = production + (1 / distance);
-
-                        if (currentPlanetScore > bestPlanetScore)
-                        {
-                            bestPlanetScore = currentPlanetScore;
-                            bestPlanet = planet;
-                        }
-                    }
-
-                    if (bestPlanet != null)
-                    {
-                        takenPlanets.Add(bestPlanet.GetId(), ship.GetId());
-
-                        if (ship.CanDock(bestPlanet))
-                        {
-                            var move = new DockMove(ship, bestPlanet);
-
-                            if (move != null)
+                            if (planet.GetDockedShips().Count == planet.GetDockingSpots())
                             {
-                                moveList.Add(move);
+                                continue;
                             }
 
-                            continue;
+                            var currentPlanetScore = GetPlanetScore(planet, ship);
 
+                            if (currentPlanetScore > bestPlanetScore)
+                            {
+                                bestPlanetScore = currentPlanetScore;
+                                bestPlanet = planet;
+                            }
                         }
                         else
                         {
-                            var move = Navigation.NavigateShipToDock(gameMap, ship, bestPlanet, Constants.MAX_SPEED);
-
-                            if (move != null)
+                            if (closestEnemyPlanet == null)
                             {
-                                moveList.Add(move);
+                                closestEnemyPlanet = planet;
                             }
-
-                            continue;
+                            else if (planet.GetDistanceTo(ship) < closestEnemyPlanet.GetDistanceTo(ship))
+                            {
+                                closestEnemyPlanet = planet;
+                            }
                         }
                     }
-                    else
-                    {
-                        //Fight!
 
+                    Move move = null;
+
+                    if (bestPlanet != null)
+                    {
+                        if (ship.CanDock(bestPlanet))
+                        {
+                            move = new DockMove(ship, bestPlanet);
+                        }
+                        else 
+                        {
+                            move = Navigation.NavigateShipToDock(gameMap, ship, bestPlanet, Constants.MAX_SPEED);
+                        }
+                    }
+                    else if (closestEnemyPlanet != null)
+                    {
+                        move = Navigation.NavigateShipTowardsTarget(gameMap, ship, closestEnemyPlanet, Constants.MAX_SPEED, true, Constants.MAX_NAVIGATION_CORRECTIONS, Math.PI / 180);
+                    }
+
+                    if (move != null)
+                    {
+                        moveList.Add(move);
                     }
                 }
 
                 Networking.SendMoves(moveList);
             }
+        }
+
+        private double GetPlanetScore(Planet planet, Ship ship)
+        {
+            var distance = planet.GetDistanceTo(ship);
+            var production = planet.GetCurrentProduction();
+            return production + (1 / distance);
         }
 
         public static void Main(string[] args)

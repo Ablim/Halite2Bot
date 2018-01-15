@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace Halite2.hlt
+namespace BotV1.hlt
 {
     public class Navigation
     {

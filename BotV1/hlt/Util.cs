@@ -1,6 +1,6 @@
 using System;
 
-namespace Halite2.hlt
+namespace BotV1.hlt
 {
     public class Util
     {

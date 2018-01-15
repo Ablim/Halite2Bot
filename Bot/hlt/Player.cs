@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Halite2.hlt {
+namespace Bot.hlt {
     public class Player {
 
         private Dictionary<int, Ship> ships;

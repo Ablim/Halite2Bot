@@ -1,4 +1,4 @@
-namespace Halite2.hlt
+namespace Bot.hlt
 {
 
     public class DockMove : Move

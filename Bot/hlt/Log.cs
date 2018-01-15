@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Halite2.hlt
+namespace Bot.hlt
 {
     public class Log
     {

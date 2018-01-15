@@ -1,11 +1,11 @@
-﻿using Halite2.hlt;
+﻿using BotV1.hlt;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Halite2
+namespace BotV1
 {
     public class MyBotV1
     {

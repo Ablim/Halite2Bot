@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 
-namespace Halite2.hlt {
+namespace BotV1.hlt {
     public class MetadataParser {
         public static void PopulateShipList(List<Ship> shipsOutput, int owner, Metadata shipsMetadata) {
             long numberOfShips = long.Parse(shipsMetadata.Pop());

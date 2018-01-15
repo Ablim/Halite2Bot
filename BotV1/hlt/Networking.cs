@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Halite2.hlt
+namespace BotV1.hlt
 {
     public class Networking
     {

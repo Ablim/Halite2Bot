@@ -1,8 +1,8 @@
-﻿using Halite2.hlt;
+﻿using Bot.hlt;
 using System;
 using System.Collections.Generic;
 
-namespace Halite2
+namespace Bot
 {
     public class MyBot
     {

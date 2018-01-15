@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Halite2.hlt {
+namespace Bot.hlt {
 
     public class GameMap {
         private int width, height;

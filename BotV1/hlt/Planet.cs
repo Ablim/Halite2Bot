@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Halite2.hlt {
+namespace BotV1.hlt {
     public class Planet: Entity {
 
         private int remainingProduction;

@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{37269968-02D5-47F4-817B-D8CD9B2E52C1}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Halite2</RootNamespace>
-    <AssemblyName>Halite2</AssemblyName>
+    <RootNamespace>Bot</RootNamespace>
+    <AssemblyName>Bot</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

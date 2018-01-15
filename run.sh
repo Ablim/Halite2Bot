@@ -1,3 +1,3 @@
 ./clean.bat
 
-./halite.exe -d "240 160" "Halite2\bin\Debug\Halite2.exe" "Halite2\bin\Debug\Halite2.exe"
+./halite.exe -d "240 160" "Bot\bin\Debug\Bot.exe" "BotV1\bin\Debug\BotV1.exe"

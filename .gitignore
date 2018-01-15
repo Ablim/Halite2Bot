@@ -1,7 +1,7 @@
 
 .vs
-Halite2/bin
-Halite2/obj
+**/bin
+**/obj
 *.log
 *.hlt
 *.zip
